@@ -1,0 +1,256 @@
+테이블 전체 삭제 / 시퀀스 전체 삭제 필요하신 분만
+SELECT 'DROP TABLE "' || TABLE_NAME || '" CASCADE CONSTRAINTS;' FROM user_tables;
+SELECT 'DROP SEQUENCE ' || object_name || ' ;' FROM user_objects WHERE object_type = 'SEQUENCE' ;
+
+=============================================
+
+
+CREATE TABLE customer (
+   cust_key   NUMBER(10)      NOT NULL,
+   cust_name   VARCHAR2(20)      NOT NULL,
+   cust_id   VARCHAR2(25)      NOT NULL,
+   cust_pwd   VARCHAR2(20)      NOT NULL,
+   cust_gender   NUMBER(10)      NULL,
+   cust_addr   VARCHAR2(200)      NULL,
+   cust_email   VARCHAR2(50)      NOT NULL,
+   cust_phone   VARCHAR2(15)      NULL,
+   cust_tel   VARCHAR2(15)      NULL,
+   cust_signout   VARCHAR2(1)   DEFAULT 'N'   NULL,
+   cust_signup DATE DEFAULT sysdate   NOT NULL
+);
+
+
+COMMENT ON COLUMN customer.cust_email IS 'Unique Key';
+COMMENT ON COLUMN customer.cust_id IS 'Unique Key';
+ALTER TABLE customer ADD UNIQUE (cust_email);
+ALTER TABLE customer ADD UNIQUE (cust_id);
+
+CREATE TABLE notice (
+   not_key   NUMBER(10)      NOT NULL,
+   ad_id   VARCHAR2(25)      NOT NULL,
+   not_title   VARCHAR2(100)      NOT NULL,
+   not_img   VARCHAR2(600)      NULL,
+   not_imgpath   VARCHAR2(600)      NULL,
+   not_hit   NUMBER(5)   DEFAULT 0   NULL,
+   not_date   DATE   DEFAULT sysdate   NOT NULL,
+   not_content   VARCHAR2(3000)      NOT NULL
+);
+
+CREATE TABLE admin (
+   ad_key   NUMBER(10)      NOT NULL,
+   ad_id   VARCHAR2(25)      NOT NULL,
+   ad_pwd   VARCHAR2(20)      NOT NULL,
+   ad_name   VARCHAR2(20)      NOT NULL,
+   ad_auth   NUMBER(5)   DEFAULT 1   NULL
+);
+
+COMMENT ON COLUMN admin.ad_id IS 'Unique Key';
+ALTER TABLE admin ADD UNIQUE (ad_id);
+
+CREATE TABLE qna (
+   qna_key   NUMBER(10)      NOT NULL,
+   prod_name  VARCHAR2(50)      NULL,
+   cust_id  VARCHAR2(25)      NULL,
+   ad_id   VARCHAR2(25)       NULL,
+   qna_title   VARCHAR2(100)      NOT NULL,
+   qna_date   DATE   DEFAULT sysdate   NOT NULL,
+   qna_content   VARCHAR2(3000)      NOT NULL,
+   qna_img   VARCHAR2(600)      NULL,
+   qna_imgpath   VARCHAR2(600)      NULL,
+   qna_hit   NUMBER(5)   DEFAULT 0   NOT NULL,
+   qna_ref   NUMBER(5)   DEFAULT 0   NOT NULL,
+   qna_step   NUMBER(5)   DEFAULT 0   NOT NULL,
+   qna_level   NUMBER(5)   DEFAULT 0   NOT NULL
+);
+
+CREATE TABLE cart (
+   cust_key   NUMBER(10)      NOT NULL,
+   prod_key   NUMBER(20)      NOT NULL,
+   cart_count   NUMBER(5)   DEFAULT 1   NULL
+);
+
+
+CREATE TABLE totalOrder (
+   ord_key   NUMBER(30)      NOT NULL,
+   cust_id   VARCHAR2(25)      NOT NULL,
+   ord_price   NUMBER(10)    NOT NULL,
+   ord_totalprice   NUMBER(15)    NOT NULL,
+   ord_Date   DATE   DEFAULT sysdate   NOT NULL,
+   ord_item   VARCHAR2(100)     NOT NULL,
+   ord_name   VARCHAR2(15)      NOT NULL,
+   ord_zipcode   VARCHAR2(6)      NOT NULL,
+   ord_addr   VARCHAR2(300)      NOT NULL,
+   ord_addrDetail   VARCHAR2(100)      NOT NULL,
+   ord_phone   VARCHAR2(15)      NOT NULL,
+   ord_tel   VARCHAR2(15)      NULL,
+   ord_request   VARCHAR2(100)      NULL,
+   ord_count   NUMBER(10)     NOT NULL,
+   ord_status   VARCHAR2(20)      NOT NULL,
+   ord_tnumber   VARCHAR2(30)      NOT NULL,
+   ord_merchant varchar2(30) NULL
+);
+
+
+CREATE TABLE wish (
+   cust_key NUMBER(10)      NOT NULL,
+   prod_key   NUMBER(20)      NOT NULL
+);
+
+
+CREATE TABLE category (
+   cat_key   NUMBER(5)      NOT NULL,
+   cat_name   VARCHAR2(50)      NOT NULL
+);
+
+CREATE TABLE review (
+   rev_key   NUMBER(10)      NOT NULL,
+   prod_name   VARCHAR2(50)      NOT NULL,
+   cust_id   VARCHAR2(25)      NULL,
+   ad_id    VARCHAR2(25)      NULL,
+   rev_content   VARCHAR2(3000)      NOT NULL,
+   rev_title   VARCHAR2(100)      NOT NULL,
+   rev_date   DATE   DEFAULT sysdate   NOT NULL,
+   rev_img   VARCHAR2(600)      NULL,
+   rev_imgpath   VARCHAR2(600)      NULL,
+   rev_rate   NUMBER(1)   NULL,
+   rev_ref   NUMBER(5)   DEFAULT 0   NOT NULL,
+   rev_step   NUMBER(5)   DEFAULT 0   NOT NULL,
+   rev_level   NUMBER(5)   DEFAULT 0   NOT NULL
+);
+
+-- 상품 테이블 생성
+CREATE TABLE product (
+   prod_key   NUMBER(20)      NOT NULL,
+   cat_key   NUMBER(5)      NOT NULL,
+   prod_name   VARCHAR2(50)      NOT NULL,
+   prod_img  VARCHAR2(600)      NULL,
+   prod_imgPath VARCHAR2(600)      NULL,
+   prod_thumbnail   VARCHAR2(600)     NULL,
+   prod_thumbnailPath VARCHAR2(600)     NULL,
+   prod_content   VARCHAR2(1000)      NOT NULL,
+   prod_price   NUMBER(10)      NOT NULL,
+   prod_rdate   DATE   DEFAULT sysdate   NOT NULL,
+   prod_cnt   NUMBER(38)      NOT NULL, -- 재고현황
+   prod_size   VARCHAR2(10)      NOT NULL,
+   prod_quantity NUMBER(10) NULL, -- 고객이 주문할때 수량
+   prod_rating NUMBER(5) DEFAULT 0 NOT NULL
+);
+
+COMMENT ON COLUMN product.prod_name IS 'Unique Key';
+ALTER TABLE product ADD UNIQUE (prod_name);
+
+ALTER TABLE customer ADD CONSTRAINT PK_CUSTOMER PRIMARY KEY (
+   cust_key
+);
+
+ALTER TABLE notice ADD CONSTRAINT PK_NOTICE PRIMARY KEY (
+   not_key
+);
+
+ALTER TABLE admin ADD CONSTRAINT PK_ADMIN PRIMARY KEY (
+   ad_key
+);
+
+ALTER TABLE qna ADD CONSTRAINT PK_QNA PRIMARY KEY (
+   qna_key
+);
+
+ALTER TABLE totalOrder ADD CONSTRAINT PK_TOTALORDER PRIMARY KEY (
+   ord_key, ord_item
+);
+
+ALTER TABLE wish ADD CONSTRAINT PK_WISH PRIMARY KEY (
+   cust_key, prod_key
+);
+
+ALTER TABLE category ADD CONSTRAINT PK_CATEGORY PRIMARY KEY (
+   cat_key
+);
+
+ALTER TABLE review ADD CONSTRAINT PK_REVIEW PRIMARY KEY (
+   rev_key
+);
+
+ALTER TABLE product ADD CONSTRAINT PK_PRODUCT PRIMARY KEY (
+   prod_key
+);
+
+ALTER TABLE notice
+ADD CONSTRAINT notice_ad_id foreign KEY(ad_id) references admin (ad_id);
+
+ALTER TABLE qna
+ADD CONSTRAINT qna_prod_name foreign KEY(prod_name) references product (prod_name);
+
+ALTER TABLE qna
+ADD CONSTRAINT qna_cust_id foreign KEY(cust_id) references customer (cust_id);
+
+ALTER TABLE qna
+ADD CONSTRAINT qna_ad_id foreign KEY(ad_id) references admin (ad_id);
+
+ALTER TABLE cart
+ADD CONSTRAINT cart_prod_key foreign KEY(prod_key) references product (prod_key) ON DELETE CASCADE;
+
+ALTER TABLE cart
+ADD CONSTRAINT cart_cust_key foreign KEY(cust_key) references customer (cust_key) ON DELETE CASCADE;           
+
+ALTER TABLE totalorder
+ADD CONSTRAINT totalorder_cust_id foreign KEY(cust_id) references customer (cust_id)  ON DELETE CASCADE;
+
+ALTER TABLE wish
+ADD CONSTRAINT wish_prod_key foreign KEY(prod_key) references product (prod_key) ON DELETE CASCADE;
+
+ALTER TABLE wish
+ADD CONSTRAINT wish_cust_key foreign KEY(cust_key) references customer (cust_key) ON DELETE CASCADE;
+
+ALTER TABLE review
+ADD CONSTRAINT review_prod_name foreign KEY(prod_name) references product (prod_name);         
+
+ALTER TABLE review
+ADD CONSTRAINT review_cust_id foreign KEY(cust_id) references customer (cust_id);
+
+ALTER TABLE review
+ADD CONSTRAINT review_ad_id foreign KEY(ad_id) references admin (ad_id);
+
+ALTER TABLE product
+ADD CONSTRAINT product_cat_key foreign KEY(cat_key) references category (cat_key);
+
+
+CREATE SEQUENCE ADMIN_SEQ --시퀀스이름 EX_SEQ
+INCREMENT BY 1 --증감숫자 1
+START WITH 1 --시작숫자 1
+MINVALUE 1 --최소값 1
+MAXVALUE 9999 --최대값 1000
+NOCYCLE --순환하지않음
+NOCACHE;
+
+CREATE SEQUENCE PRODUCT_SEQ --시퀀스이름 EX_SEQ
+INCREMENT BY 1 --증감숫자 1
+START WITH 1 --시작숫자 1
+MINVALUE 1 --최소값 1
+MAXVALUE 9999 --최대값 1000
+NOCYCLE --순환하지않음
+NOCACHE;
+
+CREATE SEQUENCE NOTICE_SEQ --시퀀스이름 EX_SEQ
+INCREMENT BY 1 --증감숫자 1
+START WITH 1 --시작숫자 1
+MINVALUE 1 --최소값 1
+MAXVALUE 99999 --최대값 1000
+NOCYCLE --순환하지않음
+NOCACHE;
+
+CREATE SEQUENCE QNA_SEQ --시퀀스이름 EX_SEQ
+INCREMENT BY 1 --증감숫자 1
+START WITH 1 --시작숫자 1
+MINVALUE 1 --최소값 1
+MAXVALUE 99999 --최대값 1000
+NOCYCLE --순환하지않음
+NOCACHE;
+
+CREATE SEQUENCE REVIEW_SEQ --시퀀스이름 EX_SEQ
+INCREMENT BY 1 --증감숫자 1
+START WITH 1 --시작숫자 1
+MINVALUE 1 --최소값 1
+MAXVALUE 99999 --최대값 1000
+NOCYCLE --순환하지않음
+NOCACHE;
